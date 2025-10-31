@@ -5,28 +5,70 @@
   <title>Tu Rol — {{ player.name }}</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="/static/css/style.css">
+  <style>
+    body {
+      background: #0a0a0a;
+      color: #f1f1f1;
+      font-family: 'Poppins', sans-serif;
+      text-align: center;
+      padding-top: 80px;
+    }
+    .card {
+      background: #161616;
+      border-radius: 12px;
+      padding: 25px;
+      width: 90%;
+      max-width: 400px;
+      margin: auto;
+      box-shadow: 0 0 15px rgba(255,255,255,0.1);
+    }
+    h1 {
+      margin-bottom: 20px;
+    }
+    .impostor {
+      color: #ff4d4d;
+    }
+    .crewmate {
+      color: #00ff9d;
+    }
+    .champ img {
+      width: 100px;
+      height: 100px;
+      border-radius: 10px;
+      margin-bottom: 10px;
+      box-shadow: 0 0 10px rgba(255,255,255,0.2);
+    }
+    .champ span {
+      display: block;
+      font-weight: bold;
+    }
+    .hint {
+      margin-top: 15px;
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+    a.link {
+      display: inline-block;
+      margin-top: 15px;
+      text-decoration: none;
+      color: #00bfff;
+      transition: 0.3s;
+    }
+    a.link:hover {
+      color: #00ffcc;
+    }
+  </style>
 </head>
 <body>
-  <header>
+  <div class="card">
     <h1>👋 Hola, {{ player.name }}</h1>
-    <nav>
-      <a href="/game/{{ code }}" class="link">← Volver al lobby</a>
-    </nav>
-  </header>
 
-  <section class="role">
     {% if player.impostor %}
       <h2 class="impostor">🕵️‍♂️ Eres el IMPOSTOR</h2>
-      <p>Actúa con cuidado. No sabes el campeón. Usa la confusión a tu favor.</p>
+      <p>Actúa con cuidado. No sabes el campeón, pero los demás sí tienen uno.</p>
+      <p>Elimínalos sin ser descubierto.</p>
     {% else %}
-      <h2>Tu Campeón</h2>
-      <div class="champ big">
+      <h2 class="crewmate">✅ No eres impostor</h2>
+      <div class="champ">
         <img src="https://ddragon.leagueoflegends.com/cdn/13.16.1/img/champion/{{ player.champion }}.png" alt="{{ player.champion }}">
-        <span>{{ player.champion }}</span>
-      </div>
-      <p>No eres impostor. Coopera para descubrirlo.</p>
-    {% endif %}
-    <div class="hint">Código de partida: <b>{{ code }}</b></div>
-  </section>
-</body>
-</html>
+        <span>{{ playe
