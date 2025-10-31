@@ -1,58 +1,107 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <title>Zerduk Lobby</title>
-    <style>
-        body {
-            font-family: 'Poppins', sans-serif;
-            background: #0a0a0a;
-            color: #f1f1f1;
-            text-align: center;
-        }
-        .ranking-container {
-            position: fixed;
-            top: 20px;
-            right: 40px;
-            background: #1b1b1b;
-            padding: 15px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(255,255,255,0.1);
-        }
-        .player {
-            margin: 10px;
-            padding: 10px;
-            background: #1b1b1b;
-            border-radius: 8px;
-            display: inline-block;
-            min-width: 120px;
-        }
-        .alive { color: #00ff9d; }
-        .dead { color: #ff4d4d; }
-    </style>
+  <meta charset="UTF-8">
+  <title>Lobby Zerduk — {{ code }}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <style>
+    body {
+      background: #0a0a0a;
+      color: #f1f1f1;
+      font-family: 'Poppins', sans-serif;
+      text-align: center;
+    }
+    .ranking {
+      background: #1b1b1b;
+      border-radius: 10px;
+      padding: 15px;
+      margin: 20px auto;
+      width: 90%;
+      max-width: 400px;
+      box-shadow: 0 0 10px rgba(255,255,255,0.1);
+    }
+    .ranking h3 {
+      margin-bottom: 10px;
+    }
+    .ranking ul {
+      list-style: none;
+      padding: 0;
+    }
+    .ranking li {
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      padding: 4px 0;
+    }
+  </style>
 </head>
 <body>
-    <h1>🌀 Zerduk Game #{{ code }}</h1>
-    <p>👥 Total jugadores: {{ total }}</p>
-    <p>💚 Jugadores vivos: {{ vivos }}</p>
+  <header>
+    <h1>🎮 Partida <span class="badge">{{ code }}</span></h1>
+  </header>
 
-    <h2>Jugadores:</h2>
-    <div>
-        {% for pid, p in game.players.items() %}
-            <div class="player {{ 'alive' if p.alive else 'dead' }}">
-                <strong>{{ p.name }}</strong><br>
-                {% if not p.alive %}💀 Eliminado{% else %}✅ Vivo{% endif %}
-            </div>
-        {% endfor %}
-    </div>
+  <section class="stats">
+    <div>👥 Jugadores: <b>{{ total }}</b></div>
+    <div>🟢 Vivos: <b>{{ vivos }}</b></div>
+  </section>
 
-    <div class="ranking-container">
-        <h3>🏆 Top 5 Jugadores</h3>
-        <ul style="list-style:none; padding:0;">
-            {% for r in ranking %}
-                <li>{{ loop.index }}. {{ r.nombre }} — {{ r.victorias }} victorias</li>
-            {% endfor %}
-        </ul>
+  <section class="players">
+    {% for id, p in game.players.items() %}
+    <div class="card {{ 'dead' if not p.alive else '' }}">
+      <div class="row">
+        <div class="col">
+          <div class="title">{{ p.name }}</div>
+          <div class="sub">
+            {% if p.alive %}🟢 Vivo{% else %}💀 Eliminado{% endif %}
+          </div>
+        </div>
+        <div class="col right">
+          {% if p.alive %}
+          <button class="danger" onclick="eliminar('{{ id }}')">❌ Eliminar</button>
+          {% else %}
+          <button class="ghost" disabled>Eliminado</button>
+          {% endif %}
+        </div>
+      </div>
+      <!-- 👇 Campeones ocultos (no se muestran globalmente) -->
+      {# Eliminado el bloque de imágenes de campeones #}
     </div>
+    {% endfor %}
+  </section>
+
+  <!-- 🏆 Ranking dentro de la misma página -->
+  <section class="ranking">
+    <h3>🏆 Top 5 Jugadores</h3>
+    <ul>
+      {% for r in ranking %}
+        <li>{{ loop.index }}. {{ r.nombre }} — {{ r.victorias }} victorias</li>
+      {% endfor %}
+    </ul>
+  </section>
+
+  <footer>
+    <small>Zerduk Web • Tiempo real con Socket.IO</small>
+  </footer>
+
+  <script>
+    const socket = io();
+    const code = "{{ code }}";
+
+    // Función para eliminar jugadores
+    function eliminar(playerId) {
+      fetch("/api/eliminar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: code, player_id: playerId })
+      });
+    }
+
+    // 🔄 Actualiza el lobby en tiempo real
+    socket.on("update_game", data => {
+      if (data.code === code) {
+        location.reload();
+      }
+    });
+  </script>
 </body>
 </html>
