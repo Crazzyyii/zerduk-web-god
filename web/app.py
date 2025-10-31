@@ -20,11 +20,23 @@ def lobby(code):
     game = db.get(code)
     if not game:
         return "❌ Partida no encontrada", 404
-    # compute alive counts & simple state
+
     total = len(game.get("players", {}))
     vivos = sum(1 for p in game.get("players", {}).values() if p.get("alive", True))
-    impostores_vivos = sum(1 for p in game.get("players", {}).values() if p.get("alive", True) and p.get("impostor", False))
-    return render_template("lobby.html", code=code, game=game, total=total, vivos=vivos, impostores_vivos=impostores_vivos)
+
+    # Ranking Top 5
+    stats = load_stats()
+    ranking = sorted(stats.values(), key=lambda x: x.get("victorias", 0), reverse=True)[:5]
+
+    return render_template(
+        "lobby.html",
+        code=code,
+        game=game,
+        total=total,
+        vivos=vivos,
+        ranking=ranking
+    )
+
 
 @app.route("/role/<code>")
 def role(code):
