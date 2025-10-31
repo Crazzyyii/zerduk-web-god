@@ -70,7 +70,7 @@ def api_eliminar():
     save_db(db)
 
     # Notificar a todos los clientes conectados a ese lobby
-    socketio.emit("update_game", {"code": code}, broadcast=True)
+    socketio.emit("update_game", {"code": code})
     return jsonify({"ok": True})
 
 @app.post("/api/create_game")
@@ -89,7 +89,7 @@ def api_create_game():
         "players": players
     }
     save_db(db)
-    socketio.emit("update_game", {"code": code}, broadcast=True)
+    socketio.emit("update_game", {"code": code})
     return jsonify({"ok": True})
 
 @app.post("/api/update_stats")
@@ -105,7 +105,7 @@ def api_update_stats():
         s["impostor"] = s.get("impostor", 0) + entry.get("impostor", 0)
         stats[str(pid)] = s
     save_stats(stats)
-    socketio.emit("update_ranking", {}, broadcast=True)
+    socketio.emit("update_ranking", {})
     return jsonify({"ok": True})
 
 if __name__ == "__main__":
