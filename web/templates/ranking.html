@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>🏆 Ranking Zerduk</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+  <header>
+    <h1>🏆 Ranking Global Zerduk</h1>
+    <nav>
+      <a href="/" class="link">Inicio</a>
+    </nav>
+  </header>
+
+  <section class="table">
+    <div class="thead">
+      <div>#</div><div>Jugador</div><div>Partidas</div><div>Victorias</div><div>Impostor</div><div>Winrate</div>
+    </div>
+    {% for i, p in enumerate(ranking, start=1) %}
+    {% set winrate = (p.victorias / p.partidas * 100) if p.partidas > 0 else 0 %}
+    <div class="trow">
+      <div>{{ i }}</div>
+      <div>{{ p.nombre }}</div>
+      <div>{{ p.partidas }}</div>
+      <div>{{ p.victorias }}</div>
+      <div>{{ p.impostor }}</div>
+      <div>{{ '%.1f'|format(winrate) }}%</div>
+    </div>
+    {% endfor %}
+  </section>
+</body>
+</html>

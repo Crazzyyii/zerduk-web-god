@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Tu Rol — {{ player.name }}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+  <header>
+    <h1>👋 Hola, {{ player.name }}</h1>
+    <nav>
+      <a href="/game/{{ code }}" class="link">← Volver al lobby</a>
+    </nav>
+  </header>
+
+  <section class="role">
+    {% if player.impostor %}
+      <h2 class="impostor">🕵️‍♂️ Eres el IMPOSTOR</h2>
+      <p>Actúa con cuidado. No sabes el campeón. Usa la confusión a tu favor.</p>
+    {% else %}
+      <h2>Tu Campeón</h2>
+      <div class="champ big">
+        <img src="https://ddragon.leagueoflegends.com/cdn/13.16.1/img/champion/{{ player.champion }}.png" alt="{{ player.champion }}">
+        <span>{{ player.champion }}</span>
+      </div>
+      <p>No eres impostor. Coopera para descubrirlo.</p>
+    {% endif %}
+    <div class="hint">Código de partida: <b>{{ code }}</b></div>
+  </section>
+</body>
+</html>

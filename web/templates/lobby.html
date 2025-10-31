@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Lobby Zerduk — {{ code }}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+  <header>
+    <h1>🎮 Partida <span class="badge">{{ code }}</span></h1>
+    <nav>
+      <a href="/ranking" class="link">🏆 Ranking</a>
+    </nav>
+  </header>
+
+  <section class="stats">
+    <div>👥 Jugadores: <b>{{ total }}</b></div>
+    <div>🟢 Vivos: <b>{{ vivos }}</b></div>
+    <div>🕵️ Impostores vivos: <b>{{ impostores_vivos }}</b></div>
+  </section>
+
+  <section class="players">
+    {% for id, p in game.players.items() %}
+    <div class="card {{ 'dead' if not p.alive else '' }}">
+      <div class="row">
+        <div class="col">
+          <div class="title">{{ p.name }}</div>
+          <div class="sub">
+            {% if p.alive %}🟢 Vivo{% else %}💀 Eliminado{% endif %}
+          </div>
+        </div>
+        <div class="col right">
+          {% if p.alive %}
+          <button class="danger" onclick="eliminar('{{ id }}')">❌ Eliminar</button>
+          {% else %}
+          <button class="ghost" disabled>Eliminado</button>
+          {% endif %}
+        </div>
+      </div>
+      {% if not p.impostor and p.champion %}
+      <div class="champ">
+        <img src="https://ddragon.leagueoflegends.com/cdn/13.16.1/img/champion/{{ p.champion }}.png" alt="{{ p.champion }}">
+        <span>{{ p.champion }}</span>
+      </div>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </section>
+
+  <footer>
+    <small>Zerduk Web • Tiempo real con Socket.IO</small>
+  </footer>
+
+  <script>
+    const socket = io();
+    const code = "{{ code }}";
+
+    function eliminar(playerId) {
+      fetch("/api/eliminar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: code, player_id: playerId })
+      });
+    }
+
+    socket.on("update_game", data => {
+      if (data.code === code) {
+        location.reload();
+      }
+    });
+  </script>
+</body>
+</html>
